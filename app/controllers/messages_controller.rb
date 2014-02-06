@@ -2,6 +2,10 @@ class MessagesController < ApplicationController
   include Mandrill::Rails::WebHookProcessor
   authenticate_with_mandrill_keys! 'YOUR_MANDRILL_WEBHOOK_KEY'
 
+  def handle_inbound(event_payload)
+    Message.save_inbound_message(event_payload)
+  end
+
   def index
   end
 
