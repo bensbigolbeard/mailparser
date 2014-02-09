@@ -1,0 +1,49 @@
+// POST email contents to our Rails database
+
+function sendHttpPost() {
+
+  var storedLabel = GmailApp.getUserLabelByName("stored");
+  var notStoredLabel = GmailApp.getUserLabelByName("not stored");
+  var threads = notStoredLabel.getThreads();
+  // var headers = ;
+  
+  for(var i in threads){
+    var msg = threads[i].getFirstMessageSubject();
+    var msgs = threads[i].getMessages();
+    for(var m = 0; m < msgs.length; m +=1){
+      var body = msgs[m].getPlainBody();
+      var to = msgs[m].getTo();
+      var from = msgs[m].getFrom();
+      var payload =
+          // This JSON gets sent to the DB in the POST request
+          {
+
+              "title" : msg,
+              "body": body,
+              "sender": from, 
+              "recipient": to
+            
+          };
+      
+      // Because payload is a JavaScript object, it will be interpreted as
+      // an HTML form. (We do not need to specify contentType; it will
+      // automatically default to either 'application/x-www-form-urlencoded'
+      // or 'multipart/form-data')
+      
+      var options =
+          {
+            "method" : "post",
+            "Content-Type" : "application/json",
+            "Accept" : "application/json",
+            "payload" : payload
+          };
+      
+      UrlFetchApp.fetch("http://3ef4397b.ngrok.com/messages", options);
+    }
+    threads[i].removeLabel(notStoredLabel);
+    threads[i].addLabel(storedLabel);
+  }
+ }
+
+
+
