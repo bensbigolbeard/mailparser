@@ -1,6 +1,8 @@
 MailParser::Application.routes.draw do
   resources :messages, :only => [:index, :show, :create]
 
+  root "messages#index"
+
 
 
 
